@@ -3,13 +3,11 @@
 Use AWS APIGateway + Lambda, Langchain and **Llama-3.3-70B** to develop this tool.
 
 
-![images](https://github.com/ganoliz/LineCalendar
-/blob/main/images/flowchart.jpg)
+![images](https://github.com/ganoliz/LineCalendar/blob/main/images/flowchart.jpg)
 
 ## Demo:
 
-![images](https://github.com/ganoliz/LineCalendar
-/blob/main/images/demo.jpg)
+![images](https://github.com/ganoliz/LineCalendar/blob/main/images/demo.jpg)
 
 ```
 User: Sentry is Crashing Google Cloud Next 2025
@@ -56,7 +54,11 @@ sysprompt = '''You are a helpful secretary to create a schedule for user.
 
 **Reference**: 
 [新米到上手 LangChain: 藉由 Function Agent 在 LINE Bot 上處理 Calendar 資訊！](https://nijialin.com/2023/08/18/first-time-langchain-line-bot/)
+
 [LangChain](https://python.langchain.com/docs/introduction/)
+
 [Google Calendar API](https://developers.google.com/calendar/api/guides/overview)
+
 [AWS APIGateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html)
+
 [AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/welcome.html)
