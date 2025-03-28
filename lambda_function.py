@@ -1,36 +1,31 @@
 import json
 import os
+import urllib
+import datetime
+import requests
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.models import ImageSendMessage
 
-import boto3
-from botocore.exceptions import ClientError
-
 from typing import Literal
 from langchain_core.tools import tool
-
 from langchain_together import ChatTogether
-
 from langchain_core.documents import Document
-
 from langchain_core.messages import SystemMessage, RemoveMessage, AIMessage
 from langchain_core.prompts.chat import ChatPromptTemplate
 from langchain_core.messages import HumanMessage
 from pydantic import BaseModel, Field
-import urllib
-import datetime
-import requests
 
-line_bot_api = LineBotApi(os.environ['channel_access_token'])
-handler = WebhookHandler(os.environ['channel_secret'])
+import boto3
+from botocore.exceptions import ClientError
 
+line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 TOGETHER_API_KEY = os.environ['TOGETHER_API_KEY']
-
+SQS_QUEUE_URL = os.environ['SQS_QUEUE_URL']
 USE_SQS = False
-
 
 class GoogleCalendarGeneratorInput(BaseModel):
     """Input for Google Calendar Generator."""
@@ -47,23 +42,18 @@ def create_calender_url(title='Test time', date='20250403T180000/20250403T220000
 
 def linebot(event):
     
-
-    body = json.loads(event['body']) # no header  json.loads(event['body'])
-    print('body=', body)
-    # handler.handle(body, signature)    # I can't match body and signature now. Probably have error with headers
+    body = json.loads(event['body']) 
+    # print('body=', body)
 
     replyToken = body['events'][0]['replyToken']
     type = body['events'][0]['message']['type']
 
-
     if type == 'text':
         
         msg = body['events'][0]['message']['text']
-
         llm = ChatTogether(
                     model='meta-llama/Llama-3.3-70B-Instruct-Turbo-Free',
                     together_api_key=TOGETHER_API_KEY)
-
         prompt_template = ChatPromptTemplate([('system', '''You are a helpful secretary to create a schedule for user. 
                                         Notes that if user mention before what time. Create dates from now to deadline.
                                         If there are some warnings need to mention, use description to list key points.'''),
@@ -79,8 +69,10 @@ def linebot(event):
             if idx > 10:
                 return "Error: Failed to create schedule. Please try again."
         
+        # Generate calender url from auto-generated schedule
         ai_message = create_calender_url(title=output.title, date=output.dates, description=output.description, location = output.location)
         
+        # message length check
         if len(ai_message) >=5000:
             ai_message = ai_message[:4986]
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message+' <超過Line字數上限!>'))
@@ -100,12 +92,11 @@ def handler(event, context):
     message_result = linebot(event)
     print('Message result:', message_result)
 
-
-    # Need to delete message that have processed
+    # Need to delete message that have processed in SQS
     if USE_SQS == True:
         try:
             sqs = boto3.client('sqs')
-            queue_url = 'https://sqs.ap-southeast-1.amazonaws.com/438465157691/langchain_lambda'
+            queue_url = SQS_QUEUE_URL
             receipt_handle = event['receiptHandle']
             sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
         except Exception as e:
@@ -113,6 +104,6 @@ def handler(event, context):
 
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
+        'body': json.dumps('Response success from Lambda!')
     }
 
