@@ -25,11 +25,11 @@ When using langchain, we can use structure output  ```.with_structured_output()`
 
 ```python 
 class GoogleCalendarGeneratorInput(BaseModel):
-    """Input for Google Calendar Generator."""
+    """Input for Google Calendar's Event Generator."""
     
-    dates: str = Field(..., description=f"Datetime symbol. format should be YYYYMMDDTHHMMSS/YYYYMMDDTHHMMSS. Current tims is {datetime.datetime.now()}")
+    datetime: str = Field(..., description=f"Calendar datetime symbol of the schedule. format MUST be YYYYMMDDTHHMMSS/YYYYMMDDTHHMMSS. Current time is  {time_now}.")
     title: str = Field(..., description="Calendar Title symbol for reserving schedule.")
-    description: str = Field(..., description="Calendar schedule summary with some Warnings for schedule description.")
+    description: str = Field(..., description="Calendar schedule summary needed to mentioned.")
     location: str = Field(..., description="Calendar location symbol for reservation.")
 
 structured_llm = llm.with_structured_output(GoogleCalendarGeneratorInput)
@@ -41,9 +41,11 @@ output = compose_llm.invoke({"msgs": msg})
 
 System prompt:
 ```python
-sysprompt = '''You are a helpful secretary to create a schedule for user. 
-				Notes that if user mention before what time. Create dates from now to deadline.
-				If there are some warnings need to mention, use description to list key points.'''
+sysprompt = '''You are a helpful secretary for scheduling meeting, interview, event, activities. 
+                Here are some suggestions: 
+                    - If there are some warnings or informations need to mention, use description to list some key points, 1. 2. 3. ...etc each line.
+                    - If the schedule provide a start time (e.g., "Meeting at 3 PM") and don't provide a end time. You should estimate a end time (meeting would be 1 hour long and interview 2 hours).
+                                               '''
 ``` 
 
 

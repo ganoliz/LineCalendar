@@ -26,13 +26,13 @@ handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 TOGETHER_API_KEY = os.environ['TOGETHER_API_KEY']
 SQS_QUEUE_URL = os.environ['SQS_QUEUE_URL']
 USE_SQS = False
-
+time_now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
 class GoogleCalendarGeneratorInput(BaseModel):
-    """Input for Google Calendar Generator."""
+    """Input for Google Calendar's Event Generator."""
     
-    dates: str = Field(..., description=f"Datetime symbol. format should be YYYYMMDDTHHMMSS/YYYYMMDDTHHMMSS. Current tims is {datetime.datetime.now()}")
+    datetime: str = Field(..., description=f"Calendar datetime symbol of the schedule. format MUST be YYYYMMDDTHHMMSS/YYYYMMDDTHHMMSS. Current time is  {time_now}.")
     title: str = Field(..., description="Calendar Title symbol for reserving schedule.")
-    description: str = Field(..., description="Calendar schedule summary with some Warnings for schedule description.")
+    description: str = Field(..., description="Calendar schedule summary needed to mentioned.")
     location: str = Field(..., description="Calendar location symbol for reservation.")
 
 def create_calender_url(title='Test time', date='20250403T180000/20250403T220000', location='台中', description='I know'):
@@ -54,10 +54,12 @@ def linebot(event):
         llm = ChatTogether(
                     model='meta-llama/Llama-3.3-70B-Instruct-Turbo-Free',
                     together_api_key=TOGETHER_API_KEY)
-        prompt_template = ChatPromptTemplate([('system', '''You are a helpful secretary to create a schedule for user. 
-                                        Notes that if user mention before what time. Create dates from now to deadline.
-                                        If there are some warnings need to mention, use description to list key points.'''),
-                                     ("user", "Here is the schedule: {msgs}")]) 
+        prompt_template = ChatPromptTemplate([('system', '''You are a helpful secretary for scheduling meeting, interview, event, activities. 
+                                        Here are some suggestions: 
+                                            - If there are some warnings or informations need to mention, use description to list some key points, 1. 2. 3. ...etc each line.
+                                            - If the schedule provide a start time (e.g., "Meeting at 3 PM") and don't provide a end time. You should estimate a end time (meeting would be 1 hour long and interview 2 hours).
+                                               '''),
+                                     ("user", "{msgs}")]) 
 
         structured_llm = llm.with_structured_output(GoogleCalendarGeneratorInput)
         compose_llm = prompt_template | structured_llm 
