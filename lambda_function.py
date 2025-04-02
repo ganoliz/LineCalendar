@@ -72,7 +72,7 @@ def linebot(event):
                 return "Error: Failed to create schedule. Please try again."
         
         # Generate calender url from auto-generated schedule
-        ai_message = create_calender_url(title=output.title, date=output.dates, description=output.description, location = output.location)
+        ai_message = create_calender_url(title=output.title, date=output.datetime, description=output.description, location = output.location)
         
         # message length check
         if len(ai_message) >=5000:
