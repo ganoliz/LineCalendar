@@ -9,5 +9,5 @@ pr_commands = ["/describe", "/review",]
 [pr_description]
 publish_labels = true
 
-[together_ai]
+[openai]
 api_base = "https://api.together.xyz/v1"
