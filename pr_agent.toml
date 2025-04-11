@@ -1,0 +1,9 @@
+model = "deepseek-Distill-Llama-70B-free"
+fallback_models = ["together_ai/deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"]
+
+[github_app]
+handle_push_trigger = true
+pr_commands = ["/describe", "/review",]
+
+[pr_description]
+publish_labels = true
