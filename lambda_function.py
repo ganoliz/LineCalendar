@@ -75,7 +75,7 @@ def linebot(event):
         # Generate calender url from auto-generated schedule
         ai_message = create_calender_url(title=output.title, date=output.datetime, description=output.description, location = output.location)
         
-        # message length check
+        # message length check, if over 5000, cut the message and add a warning.
         if len(ai_message) >=5000:
             ai_message = ai_message[:4986]
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message+' <超過Line字數上限!>'))
@@ -102,6 +102,7 @@ def handler(event, context):
             queue_url = SQS_QUEUE_URL
             receipt_handle = event['receiptHandle']
             sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
+        # If delete message have unexpected error, print the error message
         except Exception as e:
             print(f"Error deleting message from queue. {str(e)}")
     # Successfully processed message and return code: 200 
