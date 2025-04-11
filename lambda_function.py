@@ -102,6 +102,7 @@ def handler(event, context):
             queue_url = SQS_QUEUE_URL
             receipt_handle = event['receiptHandle']
             sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
+        # If delete message have unexpected error, print the error message
         except Exception as e:
             print(f"Error deleting message from queue. {str(e)}")
     # Successfully processed message and return code: 200 
