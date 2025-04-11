@@ -103,7 +103,7 @@ def handler(event, context):
             sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
         except Exception as e:
             print(f"Error deleting message from queue. {str(e)}")
-
+    # Successfully processed message and return code: 200
     return {
         'statusCode': 200,
         'body': json.dumps('Response success from Lambda!')
