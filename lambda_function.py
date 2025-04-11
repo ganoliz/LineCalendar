@@ -47,7 +47,7 @@ def linebot(event):
 
     replyToken = body['events'][0]['replyToken']
     type = body['events'][0]['message']['type']
-
+    # message type is text, not img, video and sticker.
     if type == 'text':
         
         msg = body['events'][0]['message']['text']
@@ -81,7 +81,8 @@ def linebot(event):
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message+' <超過Line字數上限!>'))
         else:
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message))
-
+    
+    # return with no error
     return 'Default Return'
 
 # Entrypoint of AWS Lambda
