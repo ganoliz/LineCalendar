@@ -20,6 +20,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
           OPENAI_API_BASE: "https://api.together.xyz/v1"
+          CONFIG_MODEL: "deepseek-Distill-Llama-70B-free"
+          CONFIG_FALLBACK_MODELS: "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
           github_action_config.auto_review: "true"
           github_action_config.auto_describe: "true"
           github_action_config.pr_actions: '["opened", "reopened", "ready_for_review", "review_requested"]'
