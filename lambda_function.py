@@ -75,7 +75,7 @@ def linebot(event):
         # Generate calender url from auto-generated schedule
         ai_message = create_calender_url(title=output.title, date=output.datetime, description=output.description, location = output.location)
         
-        # message length check
+        # message length check, if over 5000, cut the message and add a warning.
         if len(ai_message) >=5000:
             ai_message = ai_message[:4986]
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message+' <超過Line字數上限!>'))
