@@ -36,6 +36,7 @@ class GoogleCalendarGeneratorInput(BaseModel):
     location: str = Field(..., description="Calendar location symbol for reservation.")
 
 def create_calender_url(title='Test time', date='20250403T180000/20250403T220000', location='台中', description='I know'):
+    """Create auto-generated calendar url from title, date, location and description."""
     base_url = "https://www.google.com/calendar/render?action=TEMPLATE"
     event_url = f"{base_url}&text={urllib.parse.quote(title)}&dates={date}&location={urllib.parse.quote(location)}&details={urllib.parse.quote(description)}"
     return event_url+"&openExternalBrowser=1"
@@ -45,8 +46,10 @@ def linebot(event):
     body = json.loads(event['body']) 
     # print('body=', body)
 
+    # reply token is used to reply message to Line Webhook
     replyToken = body['events'][0]['replyToken']
     type = body['events'][0]['message']['type']
+
     # message type is text, not img, video and sticker.
     if type == 'text':
         
