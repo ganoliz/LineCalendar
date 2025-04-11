@@ -69,6 +69,7 @@ def linebot(event):
             output = compose_llm.invoke({"msgs": msg})
             idx += 1
             if idx > 10:
+                # If the model is not able to generate a valid output after 10 attempts, return try limit exceeded message.
                 return "Error: Failed to create schedule. Please try again."
         
         # Generate calender url from auto-generated schedule
@@ -103,7 +104,7 @@ def handler(event, context):
             sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt_handle)
         except Exception as e:
             print(f"Error deleting message from queue. {str(e)}")
-    # Successfully processed message and return code: 200
+    # Successfully processed message and return code: 200 
     return {
         'statusCode': 200,
         'body': json.dumps('Response success from Lambda!')
