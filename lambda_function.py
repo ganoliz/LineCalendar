@@ -21,12 +21,15 @@ from pydantic import BaseModel, Field
 import boto3
 from botocore.exceptions import ClientError
 
+# some environment variables
 line_bot_api = LineBotApi(os.environ['CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['CHANNEL_SECRET'])
 TOGETHER_API_KEY = os.environ['TOGETHER_API_KEY']
 SQS_QUEUE_URL = os.environ['SQS_QUEUE_URL']
 USE_SQS = False
+
 time_now = datetime.datetime.now().strftime("%Y%m%dT%H%M%S")
+
 class GoogleCalendarGeneratorInput(BaseModel):
     """Input for Google Calendar's Event Generator."""
     
@@ -39,6 +42,7 @@ def create_calender_url(title='Test time', date='20250403T180000/20250403T220000
     """Create auto-generated calendar url from title, date, location and description."""
     base_url = "https://www.google.com/calendar/render?action=TEMPLATE"
     event_url = f"{base_url}&text={urllib.parse.quote(title)}&dates={date}&location={urllib.parse.quote(location)}&details={urllib.parse.quote(description)}"
+    
     return event_url+"&openExternalBrowser=1"
 
 def linebot(event):
