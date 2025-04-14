@@ -44,8 +44,7 @@ def create_calender_url(title='Test time', date='20250403T180000/20250403T220000
 def linebot(event):
     
     body = json.loads(event['body']) 
-    # print('body=', body)
-
+    
     # reply token is used to reply message to Line Webhook
     replyToken = body['events'][0]['replyToken']
     type = body['events'][0]['message']['type']
@@ -64,6 +63,7 @@ def linebot(event):
                                                '''),
                                      ("user", "{msgs}")]) 
 
+        # Create a structured output of title, datetime, description and location.
         structured_llm = llm.with_structured_output(GoogleCalendarGeneratorInput)
         compose_llm = prompt_template | structured_llm 
         output = None
@@ -78,14 +78,13 @@ def linebot(event):
         # Generate calender url from auto-generated schedule
         ai_message = create_calender_url(title=output.title, date=output.datetime, description=output.description, location = output.location)
         
-        # message length check, if over 5000, cut the message and add a warning.
+        # message length check, if over 5000, prune the message and add a warning.
         if len(ai_message) >=5000:
             ai_message = ai_message[:4986]
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message+' <超過Line字數上限!>'))
         else:
             line_bot_api.reply_message(replyToken, TextSendMessage(ai_message))
     
-    # return with no error
     return 'Default Return'
 
 # Entrypoint of AWS Lambda
