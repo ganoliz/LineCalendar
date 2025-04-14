@@ -1,10 +1,10 @@
 [config]
 model = "together_ai/deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"
-fallback_models = ["deepseek-ai/DeepSeek-R1-Distill-Llama-70B-free"]
-custom_model_max_tokens = 8000
+fallback_models = ["together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo-Free"]
+custom_model_max_tokens = 8100
 [github_app]
 handle_push_trigger = true
-pr_commands = ["/describe", "/review",]
+pr_commands = ["/describe", "/review", "/improve"]
 
 [pr_description]
 publish_labels = true
